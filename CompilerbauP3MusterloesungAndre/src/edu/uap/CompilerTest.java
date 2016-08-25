@@ -23,6 +23,8 @@ public class CompilerTest
 		{
 			parser triplaParser = new parser(new Lexer(new FileReader("beispiel01")));
 			ast = ((Node) (triplaParser.parse().value));
+			CompilerFabrik.flachklopfen(ast);
+			System.out.println("geklopft");
 
 			pw = new PrintWriter(new BufferedWriter(new FileWriter(new File("ast.xml"))));
 

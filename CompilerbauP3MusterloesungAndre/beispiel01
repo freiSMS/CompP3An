@@ -1,1 +1,2 @@
-x = 4+3; LET f(x) {x +1} IN f(3);
+let f(x,y,z) { x = y + z; f( z=3;4 , y, z) }
+in f(2,3,4)
