@@ -1,0 +1,332 @@
+
+// Preliminary Declarations Section ===========================================
+
+package edu.uap;
+
+import java_cup.runtime.Scanner;
+import java_cup.runtime.Symbol;
+import edu.uap.nodes.*;
+
+parser code
+    {:
+
+    /*
+     * Extended error reporting with line and column numbers
+     * provided by the given Symbol object
+     */
+    public void report_error(String message, Object info)
+    {
+        String str = "Error";
+
+        if (info instanceof Symbol)
+        {
+            Symbol symbol = ((Symbol) info);
+
+            if (symbol.left >= 0)
+            {
+                str += " at line " + (symbol.left+1);
+
+                if (symbol.right >= 0)
+                {
+                    str += ", column " + (symbol.right+1);
+                }
+            }
+            
+            str += ", " + symbol.value;
+        }
+
+        str += " : " + message;
+
+        System.err.println(str);
+    }
+
+
+    /*
+     * Extended fatal error reporting with line and column numbers
+     * provided by the given Symbol object
+     */
+    public void report_fatal_error(String message, Object info)
+    {
+        report_error(message, info);
+        System.exit(1);
+    }
+
+    :};
+
+
+// Declaration of Terminals and Non Terminals =================================
+
+terminal Symbol LET, IN, IF, THEN, ELSE;
+terminal Symbol LPAR, RPAR, LBRA, RBRA;
+terminal Symbol ASSIGN;
+terminal Symbol ADD, SUB, MULT, DIV, EQ, NEQ, GT, LT;
+terminal Symbol SEMI, COMMA;
+terminal String ID;
+terminal Integer CONST;
+
+non terminal Node E, A, D, V, OP;
+
+precedence left LT, GT, EQ, NEQ;
+precedence left ADD, SUB;
+precedence left MULT, DIV;
+
+
+// Grammar Section ===========================================================
+
+/*
+E ::= LET D IN E
+    | ID
+    | ID LPAR A RPAR
+    | E OP E
+    | LPAR E RPAR
+    | CONST
+    | ID ASSIGN E
+    | E SEMI E
+    | IF E THEN E ELSE E
+    ;
+
+A ::= E
+    | A COMMA E
+    ;
+
+D ::= ID LPAR V RPAR LBRA E RBRA
+    | D D
+    ;
+
+V ::= ID
+    | V COMMA V
+    ;
+
+OP ::= ADD
+    | SUB
+    | MULT
+    | DIV
+    | EQ
+    | NEQ
+    | LT
+    | GT
+    ;
+*/
+
+start with E;
+
+E ::= LET D:d IN E:e
+      {:
+          LetNode letNode = new LetNode();
+          DefNode defNode = new DefNode();
+          BodyNode bodyNode = new BodyNode();
+          
+          defNode.addChild(d);
+          letNode.addChild(defNode);
+          
+          bodyNode.addChild(e);
+          letNode.addChild(bodyNode);
+          
+          RESULT = letNode;
+      :}
+
+    | ID:id
+      {:
+          ReadNode readNode = new ReadNode();
+
+          readNode.addChild( new IDNode(id) );
+
+          RESULT = readNode;
+      :}
+
+    | ID:id LPAR A:a RPAR
+      {:
+          CallNode callNode = new CallNode();
+
+          callNode.addChild( new IDNode(id) );
+          callNode.addChild(a);
+
+          RESULT = callNode;
+      :}
+
+    | E:e1 ADD E:e2
+      {:
+          Node op = new OpNode(OpNode.ADD);
+          op.addChild(e1);
+          op.addChild(e2);
+
+          RESULT = op;
+      :}
+
+    | E:e1 SUB E:e2
+      {:
+          Node op = new OpNode(OpNode.SUB);
+          op.addChild(e1);
+          op.addChild(e2);
+
+          RESULT = op;
+      :}
+
+    | E:e1 MULT E:e2
+      {:
+          Node op = new OpNode(OpNode.MULT);
+          op.addChild(e1);
+          op.addChild(e2);
+
+          RESULT = op;
+      :}
+
+    | E:e1 DIV E:e2
+      {:
+          Node op = new OpNode(OpNode.DIV);
+          op.addChild(e1);
+          op.addChild(e2);
+
+          RESULT = op;
+      :}
+
+    | E:e1 LT E:e2
+      {:
+          Node op = new OpNode(OpNode.LT);
+          op.addChild(e1);
+          op.addChild(e2);
+
+          RESULT = op;
+      :}
+
+    | E:e1 GT E:e2
+      {:
+          Node op = new OpNode(OpNode.GT);
+          op.addChild(e1);
+          op.addChild(e2);
+
+          RESULT = op;
+      :}
+
+    | E:e1 EQ E:e2
+      {:
+          Node op = new OpNode(OpNode.EQ);
+          op.addChild(e1);
+          op.addChild(e2);
+
+          RESULT = op;
+      :}
+
+    | E:e1 NEQ E:e2
+      {:
+          Node op = new OpNode(OpNode.NEQ);
+          op.addChild(e1);
+          op.addChild(e2);
+
+          RESULT = op;
+      :}
+
+    | LPAR E:e RPAR
+      {:
+          ParNode parNode = new ParNode();
+
+          parNode.addChild(e);
+
+          RESULT = parNode;
+      :}
+
+    | CONST:c
+      {:
+          RESULT = new ConstNode(c);
+      :}
+
+    | ID:id ASSIGN E:e
+      {:
+          AssignNode assignNode = new AssignNode();
+
+          assignNode.addChild( new IDNode(id) );
+          assignNode.addChild(e);
+
+          RESULT = assignNode;
+      :}
+
+    | E:e1 SEMI E:e2
+      {:
+          SemiNode semiNode = new SemiNode();
+
+          semiNode.addChild(e1);
+          semiNode.addChild(e2);
+
+          RESULT = semiNode;
+      :}
+
+    | IF E:e1 THEN E:e2 ELSE E:e3
+      {:
+          IfNode ifNode = new IfNode();
+          CondNode condNode = new CondNode();
+          ThenNode thenNode = new ThenNode();
+          ElseNode elseNode = new ElseNode();
+
+          condNode.addChild(e1);
+          thenNode.addChild(e2);
+          elseNode.addChild(e3);
+
+          ifNode.addChild(condNode);
+          ifNode.addChild(thenNode);
+          ifNode.addChild(elseNode);
+
+          RESULT = ifNode;
+      :}
+    ;
+
+A ::= E:e
+      {:
+          ArgsNode argsNode = new ArgsNode();
+	      argsNode.addChild(e);
+
+		  RESULT = argsNode;
+      :}
+
+    | A:a COMMA E:e
+      {:
+          ArgsNode argsNode = new ArgsNode();
+
+          argsNode.addChild(a);
+          argsNode.addChild(e);
+
+          RESULT = argsNode;
+      :}
+    ;
+
+D ::= ID:id LPAR V:v RPAR LBRA E:e RBRA
+      {:
+          FuncNode funcNode = new FuncNode();
+          ParamsNode paramsNode = new ParamsNode();
+          BodyNode bodyNode = new BodyNode();
+
+          paramsNode.addChild(v);
+          bodyNode.addChild(e);
+
+          funcNode.addChild( new IDNode(id) );
+          funcNode.addChild( paramsNode );
+          funcNode.addChild( bodyNode );
+
+          RESULT = funcNode;
+      :}
+
+    | D:d1 D:d2
+      {:
+          DefNode defNode = new DefNode();
+
+          defNode.addChild(d1);
+          defNode.addChild(d2);
+
+          RESULT = defNode;
+      :}
+    ;
+
+V ::= ID:id
+      {:
+          RESULT = new IDNode(id);
+      :}
+
+    | V:v1 COMMA V:v2
+      {:
+          ParamsNode paramsNode = new ParamsNode();
+
+          paramsNode.addChild(v1);
+          paramsNode.addChild(v2);
+
+          RESULT = paramsNode;
+      :}
+    ;

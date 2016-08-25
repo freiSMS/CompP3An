@@ -1,0 +1,51 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project name="PII_LexerParser" default="runProgram" basedir=".">
+
+    <property name="buildPath" value="${basedir}/bin"/>
+    <property name="srcPath" value="${basedir}/src"/>
+    <property name="libPath" value="${basedir}/lib"/>
+    <property name="testPath" value="${basedir}/test"/>
+    <property name="pkgPath" value="edu/uap"/>
+
+    <target name="clean" description="Clean project">
+        <delete>
+            <fileset dir="${buildPath}/${pkgPath}">
+                <include name="*.class"/>
+            </fileset>
+        </delete>
+        <delete file="${srcPath}/${pkgPath}/Lexer.java"/>
+        <delete file="${srcPath}/${pkgPath}/parser.java"/>
+        <delete file="${srcPath}/${pkgPath}/sym.java"/>
+    </target>
+
+    <target name="jflex" description="Run JFlex">
+        <java classname="JFlex.Main" fork="true" dir="${srcPath}/${pkgPath}/" classpath="${libPath}/jflex-1.4.3.jar">
+            <arg line="'${srcPath}/${pkgPath}/tripla.flex'"/>
+        </java>
+    </target>
+
+    <target name="cup" description="Run CUP">
+        <java classname="java_cup.Main" fork="true" dir="${srcPath}/${pkgPath}/" classpath="${libPath}/cup-0.10k.jar">
+            <arg line="-expect 27 '${srcPath}/${pkgPath}/tripla.cup'"/>
+        </java>
+    </target>
+
+    <target name="compile" description="Compile generated files" depends="clean, jflex, cup">
+        <javac srcdir="${srcPath}" destdir="${buildPath}" classpath="${libPath}/cup-0.10k.jar"
+               debug="true" deprecation="true" optimize="true">
+                   <!--<compilerarg line="-Xlint"/>-->
+        </javac>
+    </target>
+	
+	<property name="triplaProgram" value="wrapper.tripla"></property>
+
+    <target name="runProgram" description="Run a (valid) TRIPLA program" depends="compile">
+        <java classname="edu.uap.CompilerTest" fork="true" dir="${testPath}">
+            <classpath>
+                <pathelement path="${buildPath}"/>
+                <pathelement path="${libPath}/cup-0.10k.jar"/>
+            </classpath>
+            <arg line="'${testPath}/${triplaProgram}'"/>
+        </java>
+    </target>
+</project>

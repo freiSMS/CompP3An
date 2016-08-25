@@ -1,0 +1,97 @@
+<?xml version="1.0" encoding="UTF-8" standalone="yes"?>
+<LET>
+	<DEF>
+		<FUNC>
+			<ID attr="wrapper">
+			</ID>
+			<PARAMS>
+				<PARAMS>
+					<ID attr="number">
+					</ID>
+					<ID attr="threshold">
+					</ID>
+				</PARAMS>
+			</PARAMS>
+			<BODY>
+				<LET>
+					<DEF>
+						<FUNC>
+							<ID attr="square">
+							</ID>
+							<PARAMS>
+								<ID attr="x">
+								</ID>
+							</PARAMS>
+							<BODY>
+								<IF>
+									<COND>
+										<OP attr="&gt;">
+											<OP attr="*">
+												<READ>
+													<ID attr="x">
+													</ID>
+												</READ>
+												<READ>
+													<ID attr="x">
+													</ID>
+												</READ>
+											</OP>
+											<READ>
+												<ID attr="threshold">
+												</ID>
+											</READ>
+										</OP>
+									</COND>
+									<THEN>
+										<READ>
+											<ID attr="x">
+											</ID>
+										</READ>
+									</THEN>
+									<ELSE>
+										<OP attr="*">
+											<READ>
+												<ID attr="x">
+												</ID>
+											</READ>
+											<READ>
+												<ID attr="x">
+												</ID>
+											</READ>
+										</OP>
+									</ELSE>
+								</IF>
+							</BODY>
+						</FUNC>
+					</DEF>
+					<BODY>
+						<CALL>
+							<ID attr="square">
+							</ID>
+							<ARGS>
+								<READ>
+									<ID attr="number">
+									</ID>
+								</READ>
+							</ARGS>
+						</CALL>
+					</BODY>
+				</LET>
+			</BODY>
+		</FUNC>
+	</DEF>
+	<BODY>
+		<CALL>
+			<ID attr="wrapper">
+			</ID>
+			<ARGS>
+				<ARGS>
+					<CONST attr="4">
+					</CONST>
+				</ARGS>
+				<CONST attr="10">
+				</CONST>
+			</ARGS>
+		</CALL>
+	</BODY>
+</LET>
