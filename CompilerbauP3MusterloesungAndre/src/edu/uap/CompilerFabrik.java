@@ -43,12 +43,24 @@ public class CompilerFabrik {
 	static {
 		speicher.add(rho);	//enthält pro Nesting Level eine HashMap
 	}
-
+	
+	//Sucht im Speicher nach dem key in allen kleineren Nesting Leveln
+	private static AddressPair speicherSuche(String key, int startNL)	{
+		int i = startNL;
+		AddressPair idSpeicherinhalt = speicher.get(i).get(key);		
+		while(idSpeicherinhalt == null && i>0)	{
+			idSpeicherinhalt = speicher.get(i).get(key);
+		}
+		return idSpeicherinhalt;
+	}
 	
 	public static Vector<Instruction> code(ReadNode read)	{
 		//Hilfsvariablen
 		DefNode id = (DefNode) read.getChildren().get(0);
-		AddressPair idSpeicherinhalt = rho.get(id.getAttribute().toString());
+		
+		//Sucht im Speicher nach der ID in allen kleineren Nesting Leveln
+		AddressPair idSpeicherinhalt = speicherSuche(id.getAttribute().toString(),nl);	//evtl. Fehlermeldung einbauen, wenn null zurückgeliefert wird
+
 		int k = (Integer) idSpeicherinhalt.loc;
 		int nl1 = idSpeicherinhalt.nl;
 		
