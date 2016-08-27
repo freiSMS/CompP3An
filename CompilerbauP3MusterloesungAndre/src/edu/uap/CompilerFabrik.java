@@ -39,7 +39,7 @@ public class CompilerFabrik {
 	static HashMap<String, AddressPair> rho = new HashMap<String, AddressPair>(); 	//Speicher fuer Variablen und Labels
 	static LinkedList<HashMap<String, AddressPair>> speicher = new LinkedList<HashMap<String, AddressPair>>();
 	
-	//Initialisiert den Speicher mit Nesting Level 0
+	//Initialisiert den Speicher mit Nesting Level 0 -> 
 	static {
 		speicher.add(rho);
 	}
