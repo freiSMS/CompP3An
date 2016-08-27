@@ -41,7 +41,7 @@ public class CompilerFabrik {
 	
 	//Initialisiert den Speicher mit Nesting Level 0 -> 
 	static {
-		speicher.add(rho);
+		speicher.add(rho);	//enthält pro Nesting Level eine HashMap
 	}
 
 	
