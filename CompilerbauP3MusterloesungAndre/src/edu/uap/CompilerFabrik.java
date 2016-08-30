@@ -34,100 +34,100 @@ public class CompilerFabrik {
 	}
 	
 	//Aufgabe 1b)
-	static int labelCount = 0;
+	public static int labelCount = 0;
 	static int top = 0; //gibt die erste freie Stelle in der HashMap an
 	//static int nl =0; //Das nesting Level startet bei 0 und erhöht sich bei jedem Funktionsaufruf
 	
-	static HashMap<String, AddressPair> rho = new HashMap<String, AddressPair>(); 	//Speicher fuer Variablen und Labels
-	static LinkedList<HashMap<String, AddressPair>> speicher = new LinkedList<HashMap<String, AddressPair>>();
+//	static HashMap<String, AddressPair> rho = new HashMap<String, AddressPair>(); 	//Speicher fuer Variablen und Labels
+//	static LinkedList<HashMap<String, AddressPair>> speicher = new LinkedList<HashMap<String, AddressPair>>();
 	
 	//Initialisiert den Speicher mit Nesting Level 0 -> 
-	static {
-		speicher.add(rho);	//enthält pro Nesting Level eine HashMap
-	}
+//	static {
+//		speicher.add(rho);	//enthält pro Nesting Level eine HashMap
+//	}
 	
 	
 	//Da die code Funktionsaufrufe immer mit dem Typ Node erfolgen gibt es eine Weiterleitung je nach tatsächlichem Tyo
-	public static Vector<Instruction> code (Node node, int nl)	{
+	public static Vector<Instruction> code (Node node, int nl, HashMap<String, AddressPair> rho)	{
 		Vector<Instruction> tramCode = new Vector<Instruction>();
 		switch (node.getType())	{
 		case "ARGS":
-			tramCode.addAll(code((ReadNode) node, nl));
+			tramCode.addAll(code((ReadNode) node, nl, rho));
 			break;
 		case "ASSIGN":
-			tramCode.addAll(code((AssignNode) node, nl));
+			tramCode.addAll(code((AssignNode) node, nl, rho));
 			break;
 		case "CONST":	
-			tramCode.addAll( code((ConstNode) node, nl));
+			tramCode.addAll( code((ConstNode) node, nl, rho));
 			break;
 		case "BODY":
-			tramCode.addAll(code((BodyNode) node, nl));
+			tramCode.addAll(code((BodyNode) node, nl, rho));
 			break;	
 		case "CALL":
-			tramCode.addAll(code((CallNode) node, nl));
+			tramCode.addAll(code((CallNode) node, nl, rho));
 			break;		
 		case "COND":
-			tramCode.addAll(code((CondNode) node, nl));
+			tramCode.addAll(code((CondNode) node, nl, rho));
 			break;		
 		case "DEF":
-			tramCode.addAll(code((DefNode) node, nl));
+			tramCode.addAll(code((DefNode) node, nl, rho));
 			break;		
 		case "ELSE":
-			tramCode.addAll(code((ElseNode) node, nl));
+			tramCode.addAll(code((ElseNode) node, nl, rho));
 			break;		
 		case "EXPR":
-			tramCode.addAll(code((ExprNode) node, nl));
+			tramCode.addAll(code((ExprNode) node, nl, rho));
 			break;		
 		case "FUNC":
-			tramCode.addAll(code((FuncNode) node, nl));
+			tramCode.addAll(code((FuncNode) node, nl, rho));
 			break;		
 		case "ID":
-			tramCode.addAll(code((IDNode) node, nl));
+			tramCode.addAll(code((IDNode) node, nl, rho));
 			break;		
 		case "IF":
-			tramCode.addAll(code((IfNode) node, nl));
+			tramCode.addAll(code((IfNode) node, nl, rho));
 			break;		
 		case "LET":
-			tramCode.addAll(code((LetNode) node, nl));
+			tramCode.addAll(code((LetNode) node, nl, rho));
 			break;		
 		case "OP":
-			tramCode.addAll(code((OpNode) node, nl));
+			tramCode.addAll(code((OpNode) node, nl, rho));
 			break;		
 		case "PARAMS":
-			tramCode.addAll(code((ParamsNode) node, nl));
+			tramCode.addAll(code((ParamsNode) node, nl, rho));
 			break;		
 		case "PAR":
-			tramCode.addAll(code((ParNode) node, nl));
+			tramCode.addAll(code((ParNode) node, nl, rho));
 			break;		
 		case "READ":
-			tramCode.addAll(code((ReadNode) node, nl));
+			tramCode.addAll(code((ReadNode) node, nl, rho));
 			break;		
 		case "SEMI":
-			tramCode.addAll(code((SemiNode) node, nl));
+			tramCode.addAll(code((SemiNode) node, nl, rho));
 			break;		
 		case "THEN":
-			tramCode.addAll(code((ThenNode) node, nl));
+			tramCode.addAll(code((ThenNode) node, nl, rho));
 			break;		
 		}
 		return tramCode;
 	}
 	
 	//Sucht im Speicher nach dem key in allen kleineren Nesting Leveln
-	private static AddressPair speicherSuche(String key, int startNL)	{
+/*	private static AddressPair speicherSuche(String key, int startNL)	{
 		int i = startNL;
 		AddressPair idSpeicherinhalt = speicher.get(i).get(key);		
 		while(idSpeicherinhalt == null && i>0)	{
 			idSpeicherinhalt = speicher.get(i).get(key);
 		}
 		return idSpeicherinhalt;
-	}
+	}*/
 	
-	public static Vector<Instruction> code(ReadNode read, int nl)	{
+	public static Vector<Instruction> code(ReadNode read, int nl, HashMap<String, AddressPair> rho)	{
 		//Hilfsvariablen
 		DefNode id = (DefNode) read.getChildren().get(0);
 		
 		//Sucht im Speicher nach der ID in allen kleineren Nesting Leveln
-		AddressPair idSpeicherinhalt = speicherSuche(id.getAttribute().toString(),nl);	//evtl. Fehlermeldung einbauen, wenn null zurückgeliefert wird
+		AddressPair idSpeicherinhalt = rho.get(id.getAttribute().toString());	//evtl. Fehlermeldung einbauen, wenn null zurückgeliefert wird
 
 		int k = (Integer) idSpeicherinhalt.loc;
 		int nl1 = idSpeicherinhalt.nl;
@@ -139,13 +139,13 @@ public class CompilerFabrik {
 	}
 	
 
-	public static Vector<Instruction> code(AssignNode asignNode, int nl)	{
+	public static Vector<Instruction> code(AssignNode asignNode, int nl, HashMap<String, AddressPair> rho)	{
 		//Erstellung von Hilfsvariablen zur besseren Codelesbarkeit  
 		Node E = asignNode.getChildren().get(1);
 		IDNode ID = (IDNode) asignNode.getChildren().get(0);
 
 		//Suche die ID im Speicher
-		AddressPair variable = speicherSuche(ID.getAttribute().toString(), nl);
+		AddressPair variable = rho.get(ID.getAttribute().toString());
 		
 		
 		//k und nl1 ergeben sich aus roh(id)
@@ -153,16 +153,16 @@ public class CompilerFabrik {
 		int k = (Integer) variable.loc;
 		
 		//Instructioneugung
-		Vector<Instruction> tramCode = code(E, nl);
+		Vector<Instruction> tramCode = code(E, nl, rho);
 		tramCode.add(new Instruction((Instruction.STORE),k, nl- nl1));
 		tramCode.add(new Instruction((Instruction.LOAD),k, nl- nl1));	
 		return tramCode;
 	}
 	
-	public static Vector<Instruction> code (OpNode opNode, int nl)	{
+	public static Vector<Instruction> code (OpNode opNode, int nl, HashMap<String, AddressPair> rho)	{
 		Vector<Instruction> tramCode = new Vector<Instruction>();
-		tramCode.addAll(code(opNode.getChildren().get(0), nl));
-		tramCode.addAll(code(opNode.getChildren().get(1), nl));
+		tramCode.addAll(code(opNode.getChildren().get(0), nl, rho));
+		tramCode.addAll(code(opNode.getChildren().get(1), nl, rho));
 		
 		// Instruktionsaufruf je nachdem, welche Operation der Knoten darstellt
 		int instruktionsNummer =0;
@@ -198,7 +198,7 @@ public class CompilerFabrik {
 		
 	}
 	
-	public static Vector<Instruction> code (ConstNode con, int nl)	{
+	public static Vector<Instruction> code (ConstNode con, int nl, HashMap<String, AddressPair> rho)	{
 		//Hilfsvariablen
 		Integer konstantenWert = Integer.decode(con.getAttribute().toString());
 		
@@ -209,27 +209,27 @@ public class CompilerFabrik {
 	}
 	
 	//Durch das flachklopfen hat jeder Semi Node beliebig viele Kinder
-	public static Vector<Instruction> code (SemiNode semi, int nl)	{
+	public static Vector<Instruction> code (SemiNode semi, int nl, HashMap<String, AddressPair> rho)	{
 		Vector<Instruction> tramCode = new Vector<Instruction>();
 		for(int i =0; i<semi.getChildren().size()-1; i++)	{
-			tramCode.addAll(code(semi.getChildren().get(i), nl));
+			tramCode.addAll(code(semi.getChildren().get(i), nl, rho));
 			//***Pop Instruction einfügen ****tramCode.add(Instruction.)
 		}
 		//füge für das letzte Kind des Semi Knoten den Code manuell hinzu, weil darauf kein pop folgt
-		tramCode.addAll(code(semi.getChildren().get(semi.getChildren().size()), nl));
+		tramCode.addAll(code(semi.getChildren().get(semi.getChildren().size()), nl, rho));
 		return tramCode;
 	}
 	
-	private static void addLabel(int nl)	{
+	public static void addLabel(int nl, HashMap<String, AddressPair> rho)	{
 		rho.put(Integer.toString(labelCount), new AddressPair(new TramLabel(-1),nl));
 		labelCount++;
 	}
 	
-	public static Vector<Instruction> code(IfNode ifNode, int nl)	{
+	public static Vector<Instruction> code(IfNode ifNode, int nl, HashMap<String, AddressPair> rho)	{
 		Vector<Instruction> tramCode = new Vector<Instruction>();	
-		Vector<Instruction> e1 = code(ifNode.getChildren().get(0), nl);
-		Vector<Instruction> e2 = code(ifNode.getChildren().get(1), nl);
-		Vector<Instruction> e3 = code(ifNode.getChildren().get(2), nl);
+		Vector<Instruction> e1 = code(ifNode.getChildren().get(0), nl, rho);
+		Vector<Instruction> e2 = code(ifNode.getChildren().get(1), nl, rho);
+		Vector<Instruction> e3 = code(ifNode.getChildren().get(2), nl, rho);
 		
 		tramCode.addAll(e1);
 		//Es wird ein neues Label erstellt zu dem gesprungen werden soll, wenn if(e1) true ergibt
@@ -237,12 +237,12 @@ public class CompilerFabrik {
 		//...dazugehörenden Else Node -> das ist die SprungAdresse
 					//rho.put(Integer.toString(labelCount), new AddressPair(new TramLabel(-1),nl));	//l1
 					//labelCount++;
-		addLabel(nl);	//l1
+		addLabel(nl, rho);	//l1
 		int label1 = labelCount;
 		tramCode.add(new Instruction(Instruction.TRAMLABELCALLER, label1, Instruction.IFZERO, label1));	//Hinter label1 steht der später einzusetzende Maschinenbefehl
 		//tramCode.add(new Instruction(Instruction.IFZERO, label1));	//in LabelCount steht der Key zum Label in der HashMap
 		tramCode.addAll(e2);
-		addLabel(nl);
+		addLabel(nl, rho);
 		int label2 = labelCount;
 		tramCode.add(new Instruction(Instruction.TRAMLABELCALLER, label2, Instruction.GOTO, label2));
 		tramCode.add(new Instruction(Instruction.TRAMLABEL, label1));
@@ -254,20 +254,20 @@ public class CompilerFabrik {
 	}
 	
 	//Muss ich hier das Nesting Level erhöhen?
-	public static Vector<Instruction> code(CallNode call, int nl)	{
+	public static Vector<Instruction> code(CallNode call, int nl, HashMap<String, AddressPair> rho)	{
 		nl++;	//ein Call Node erhöht das NestingLevel
 		
 		Vector<Instruction> tramCode = new Vector<Instruction>();
 		
 		//Alle Kinder ab index 1 sind Funktionsparameter und werden zuerst in Code übersetzt
 		for(int i=1; i<call.getChildren().size();i++)	{
-			tramCode.addAll(code(call.getChildren().get(i), nl));
+			tramCode.addAll(code(call.getChildren().get(i), nl, rho));
 		}
 		
 		//Hilfsvariablen
 		Integer idName = Integer.decode(call.getChildren().get(0).getAttribute().toString());
 		int anzahlFunktionsparameter = call.getChildren().size() -1; //Da das erste Kind der IDNode ist
-		AddressPair idSpeicherInhalt = speicherSuche(idName.toString(), nl);
+		AddressPair idSpeicherInhalt = rho.get(idName.toString());
 		int nestingLevelDifferenz = nl - idSpeicherInhalt.nl;
 		Instruction invokeInstruction = new Instruction(Instruction.INVOKE, anzahlFunktionsparameter, idName, nestingLevelDifferenz);	//idName muss später mit der Instruktionsnummer dieses Labels ersetzt werden
 				
@@ -276,31 +276,54 @@ public class CompilerFabrik {
 		return tramCode;
 	}
 	
-	public static Vector<Instruction> code(DefNode defNode, int nl)	{
+	public static Vector<Instruction> code(DefNode defNode, int nl, HashMap<String, AddressPair> rho)	{
 		Vector<Instruction> tramCode = new Vector<Instruction>();
 		//Durch das Flachklopfen sind alle Kinder Func Nodes
 		//for(int i =0; i< )
 		ListIterator<Node> iterator = defNode.getChildren().listIterator();
 		while(iterator.hasNext())	{
-			tramCode.addAll(code(iterator.next(), nl));
+			tramCode.addAll(code(iterator.next(), nl, rho));
 		}
 		return tramCode;
 	}
 	
-	public static Vector<Instruction> code(LetNode letNode, int nl)	{
-		HashMap<String, AddressPair> rho2 = elab_def()
+	public static Vector<Instruction> code(LetNode letNode, int nl, HashMap<String, AddressPair> rho)	{
+		Vector<Instruction> tramCode = new Vector<Instruction>();
+		HashMap<String, AddressPair> rho2 = ((DefNode)letNode.getChildren().get(0)).elab_def(rho, nl);
+		addLabel(nl, rho);
+		int label = labelCount;
+		tramCode.add(new Instruction(Instruction.TRAMLABELCALLER, label, Instruction.GOTO, label));
+		tramCode.addAll(code(letNode.getChildren().get(0),nl, rho2));
+		tramCode.add(new Instruction(Instruction.TRAMLABEL, label));
+		tramCode.addAll(code(letNode.getChildren().get(1),nl, rho2));
+		return tramCode;
+		
 	}
 	
 	
-	public static Vector<Instruction> code(FuncNode funcNode, int nl)	{
+	public static Vector<Instruction> code(FuncNode funcNode, int nl1, HashMap<String, AddressPair> rho)	{
 		Vector<Instruction> tramCode = new Vector<Instruction>();
-		addLabel(nl);
-		int label = labelCount;
+		
+		String funcKey = funcNode.getAttribute().toString();
 		
 		//Speichere die FunktionsID in der Hashmap mit dem Label und dem Nesting Level:
+		int nl = rho.get(funcKey).nl;
+
+		tramCode.add(new Instruction(Instruction.TRAMLABEL, funcKey));
+		
+		//Hinzufügen der Parameter in den Speicher:
+		ParamsNode par = (ParamsNode) funcNode.getChildren().get(1);
+
+		for(int i=0; i<par.getChildren().size();i++)	{
+			String key = par.getChildren().get(i).getAttribute().toString();
+			rho.put(key, new AddressPair(i, nl+1));
+		}
+		tramCode.addAll(code(funcNode.getChildren().get(2).getChildren().get(0), nl+1, rho));
 		
 		
-		tramCode.add(new Instruction(Instruction.TRAMLABEL, label));
+		
+		
+		return tramCode;
 		
 	}
 	

@@ -9,6 +9,11 @@ public class AddressPair {
 		this.nl = nestingLevel;
 	}
 	
+	public AddressPair(int loc, int nestingLevel) {
+		this.loc = loc;
+		this.nl = nestingLevel;
+	}
+
 	@Override
 	public boolean equals(Object vergleichspaar)	{
 		AddressPair vergl = (AddressPair) vergleichspaar;

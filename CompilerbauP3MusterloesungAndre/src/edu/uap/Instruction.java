@@ -13,6 +13,7 @@ public class Instruction
 	private Integer arg2;
 	private Integer arg3;
 	private Instruction arg4;
+	private String key;
 
 	public final static int CONST = 1;
 	public final static int LOAD = 2;
@@ -42,6 +43,13 @@ public class Instruction
 	// wird im Speicher nach dem in Args1 gespeicherte Label gesucht und bei der folgenden Instruction 
 	// anstatt der dort stehenden Sprungadresse -1 eingefügt. Dann wird der TramLabelCaller entfernt.
 
+	//Zusatzkonstruktor für funcNodes (hier sind Strings und nicht int die keys
+	public Instruction(int opcode, String key)	{
+		this.opcode = opcode;
+		this.key = key;
+		
+	}
+	
 	
 	//Zusatzkonstruktor für die Invoke Instruktion
 	public Instruction(int opcode, Integer arg1,Instruction invoke)	{
