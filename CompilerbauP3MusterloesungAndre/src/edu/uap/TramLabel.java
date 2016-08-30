@@ -3,6 +3,10 @@ package edu.uap;
 public class TramLabel {
 	int address;
 	
+	public TramLabel(int a)	{
+		this.address = a;
+	}
+	
 	@Override
 	public boolean equals(Object tl)	{
 		if(tl instanceof Integer)	{

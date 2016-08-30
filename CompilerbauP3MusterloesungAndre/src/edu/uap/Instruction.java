@@ -12,6 +12,7 @@ public class Instruction
 	private Integer arg1;
 	private Integer arg2;
 	private Integer arg3;
+	private Instruction arg4;
 
 	public final static int CONST = 1;
 	public final static int LOAD = 2;
@@ -31,7 +32,25 @@ public class Instruction
 	public final static int INVOKE = 16;
 	public final static int RETURN = 17;
 
+	//PseudoInstruktion für TramLabel -> wird später wieder entfernt
+	public final static int TRAMLABEL = 18;	//args1 gibt die Nummer des Labels an das im Speicher die Instruktionsnummer benötigt
+	public final static int TRAMLABELCALLER = 19; //arg1 gibt die Nummer des Labels an das gecallt wird
+	// -> im ersten Schritt werden alle Instuktionen durchlaufen und immer hochgezählt, wenn die Instruction kein
+	// TramLAbelCaller ist. Bei jedem TramLabel wird zuerst im Speicher rho dem Label, welches in args1 gespeichert ist
+	//der aktuelle Count zugeordnet und die PseudoLabel- Operation entfernt.
+	//Im zweiten Schritt werden alle die Instruktionen erneut durchlaufen. Bei jedem TramLabelCaller
+	// wird im Speicher nach dem in Args1 gespeicherte Label gesucht und bei der folgenden Instruction 
+	// anstatt der dort stehenden Sprungadresse -1 eingefügt. Dann wird der TramLabelCaller entfernt.
 
+	
+	//Zusatzkonstruktor für die Invoke Instruktion
+	public Instruction(int opcode, Integer arg1,Instruction invoke)	{
+		this(opcode, arg1);
+		this.arg4 = invoke;
+	}
+	
+	
+	
 	public Instruction(int opcode, Integer arg1, Integer arg2, Integer arg3)
 	{
 		this(opcode, arg1, arg2);

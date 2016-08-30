@@ -4,6 +4,11 @@ public class AddressPair {
 	Object loc;
 	int nl;
 	
+	public AddressPair(TramLabel tram, int nestingLevel)	{
+		this.loc = tram;
+		this.nl = nestingLevel;
+	}
+	
 	@Override
 	public boolean equals(Object vergleichspaar)	{
 		AddressPair vergl = (AddressPair) vergleichspaar;
