@@ -1,15 +1,2 @@
 <?xml version="1.0" encoding="UTF-8" standalone="yes"?>
-<SEMI>
-	<ASSIGN>
-		<ID attr="x"></ID>
-		<CONST attr="1"></CONST>
-	</ASSIGN>
-	<ASSIGN>
-		<ID attr="y"></ID>
-		<CONST attr="2"></CONST>
-	</ASSIGN>
-	<ASSIGN>
-		<ID attr="z"></ID>
-		<CONST attr="3"></CONST>
-	</ASSIGN>
-</SEMI>
+<SEMI><ASSIGN><ID attr="x"></ID><CONST attr="1"></CONST></ASSIGN><ASSIGN><ID attr="y"></ID><CONST attr="2"></CONST></ASSIGN><ASSIGN><ID attr="z"></ID><CONST attr="3"></CONST></ASSIGN></SEMI>
