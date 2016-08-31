@@ -40,10 +40,12 @@ public class CompilerTest
 			HashMap<String, AddressPair> rho = new HashMap<String, AddressPair>();
 			Vector<Instruction> programm = CompilerFabrik.code(ast, 0, rho);
 			
+			
 			Iterator<Instruction> itr = programm.iterator();
 			while (itr.hasNext()){
 				System.out.println(itr.next().toString());
 			}
+			
 
 		}
 		catch (FileNotFoundException e)

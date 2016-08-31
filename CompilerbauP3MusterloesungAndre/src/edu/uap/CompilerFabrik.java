@@ -1,6 +1,7 @@
 package edu.uap;
 
 import java.util.HashMap;
+import java.util.Iterator;
 import java.util.LinkedList;
 import java.util.ListIterator;
 import java.util.Vector;
@@ -238,16 +239,28 @@ public class CompilerFabrik {
 					//rho.put(Integer.toString(labelCount), new AddressPair(new TramLabel(-1),nl));	//l1
 					//labelCount++;
 		addLabel(nl, rho);	//l1
+		
+		//Hilfsvariablen für Pseudoinstruktion 1
 		int label1 = labelCount;
-		tramCode.add(new Instruction(Instruction.TRAMLABELCALLER, label1, Instruction.IFZERO, label1));	//Hinter label1 steht der später einzusetzende Maschinenbefehl
+		Instruction einzusetzendeInstruktion = new Instruction(Instruction.IFZERO,-1);
+		int einsetzStelle = 1;
+		
+		//Pseudoinstruktion1
+		tramCode.add(new Instruction(Instruction.TRAMLABELCALLER, label1, einzusetzendeInstruktion , einsetzStelle));	//Hinter label1 steht der später einzusetzende Maschinenbefehl
 		//tramCode.add(new Instruction(Instruction.IFZERO, label1));	//in LabelCount steht der Key zum Label in der HashMap
 		tramCode.addAll(e2);
+		
+		//Hilfsvariablen für Pseudoinstruktion 2
 		addLabel(nl, rho);
 		int label2 = labelCount;
-		tramCode.add(new Instruction(Instruction.TRAMLABELCALLER, label2, Instruction.GOTO, label2));
-		tramCode.add(new Instruction(Instruction.TRAMLABEL, label1));
+		einzusetzendeInstruktion = new Instruction(Instruction.GOTO,-1);	//einsetzStelle wie oben
+		
+		
+		
+		tramCode.add(new Instruction(Instruction.TRAMLABELCALLER, label2, einzusetzendeInstruktion, einsetzStelle));
+		tramCode.add(new Instruction(Instruction.TRAMLABEL, Integer.toString(label1)));
 		tramCode.addAll(e3);
-		tramCode.add(new Instruction(Instruction.TRAMLABEL, label2));
+		tramCode.add(new Instruction(Instruction.TRAMLABEL, Integer.toString(label2)));
 		tramCode.add(new Instruction(Instruction.NOP));
 
 		return tramCode;
@@ -269,9 +282,9 @@ public class CompilerFabrik {
 		AddressPair idSpeicherInhalt = rho.get(idName);
 		int nestingLevelDifferenz = nl - idSpeicherInhalt.nl;
 		int spaetereEinsetzposition = 2;
-		Instruction invokeInstruction = new Instruction(Instruction.INVOKE, anzahlFunktionsparameter, -1, nestingLevelDifferenz, spaetereEinsetzposition);	//idName muss später mit der Instruktionsnummer dieses Labels ersetzt werden
+		Instruction invokeInstruction = new Instruction(Instruction.INVOKE, anzahlFunktionsparameter, -1, nestingLevelDifferenz);	//idName muss später mit der Instruktionsnummer dieses Labels ersetzt werden
 				
-		tramCode.add(new Instruction(Instruction.TRAMLABELCALLER, idName,invokeInstruction));
+		tramCode.add(new Instruction(Instruction.TRAMLABELCALLER, idName, invokeInstruction, spaetereEinsetzposition));
 		//nl++;	//???? Nur die Funktionsdefinitionen bekommen bei der Definition ein höheres Nesting Level??
 		return tramCode;
 	}
@@ -301,10 +314,15 @@ public class CompilerFabrik {
 		Vector<Instruction> tramCode = new Vector<Instruction>();
 		HashMap<String, AddressPair> rho2 = ((DefNode)letNode.getChildren().get(0)).elab_def(rho, nl);
 		addLabel(nl, rho);
+		
+		//Hilfsvariablen für Tramlabel
 		int label = labelCount;
-		tramCode.add(new Instruction(Instruction.TRAMLABELCALLER, label, Instruction.GOTO, label));
+		int ersatzStelle = 1;
+		Instruction einsetzInstruktion = new Instruction(Instruction.GOTO, -1);
+		
+		tramCode.add(new Instruction(Instruction.TRAMLABELCALLER, label, einsetzInstruktion, ersatzStelle));
 		tramCode.addAll(code(letNode.getChildren().get(0),nl, rho2));	//Übersetzung DefNode
-		tramCode.add(new Instruction(Instruction.TRAMLABEL, label));
+		tramCode.add(new Instruction(Instruction.TRAMLABEL, Integer.toString(label)));
 		tramCode.addAll(code(letNode.getChildren().get(1),nl, rho2));	//Übersetzung BodyNode
 		return tramCode;
 		
@@ -343,6 +361,46 @@ public class CompilerFabrik {
 		Vector<Instruction> tramCode = new Vector<Instruction>();
 		tramCode.addAll(code(bodyNode.getChildren().get(0), nl, rho));
 		return tramCode;
+	}
+	
+	public static Vector<Instruction> replaceTramLabels(Vector<Instruction> altProgramm)	{
+		HashMap<String, Integer> rho = new HashMap<String, Integer>();
+		int instruktionsNummer = 1;
+		Iterator<Instruction> it = altProgramm.iterator();
+		
+		//Phase1; ermittle die Instruktionsnummern aller TramLabels und entferne diese daraufhin
+		while(it.hasNext())	{
+			//Falls die aktuelle Instruktion ein TramLabel ist, speichere die Instruktionsnummer mit dem key in arg1 in der Hashmap
+			//Und entferne das Label
+			Instruction tmp = it.next();
+			if(((Integer)tmp.opcode).equals(Instruction.TRAMLABEL)){
+				rho.put(tmp.key, instruktionsNummer);
+			}
+			else	{
+				instruktionsNummer++;	
+			}
+		}
+		
+
+		for (int i=0; i<altProgramm.size(); i++)	{
+			Instruction tmp = altProgramm.get(i);		
+			//Falls die aktuelle Instruktion ein TramLabel ist, speichere die Instruktionsnummer mit dem key in arg1 in der Hashmap
+			//Und entferne das Label
+
+			if(((Integer)tmp.opcode).equals(Instruction.TRAMLABELCALLER)){
+				int pos = rho.get(tmp.key);	//hole die Instruktionsnummer des Labels
+				Instruction einfuegeInstruction = tmp.arg4;
+				switch(tmp.erstatzStelle)	{
+				case 1: einfuegeInstruction.arg1 = pos;
+				case 2: einfuegeInstruction.arg2 = pos;
+				case 3: einfuegeInstruction.arg3 = pos;
+				}
+				altProgramm.add(i, einfuegeInstruction);
+				altProgramm.remove(i+1);
+			}
+		
+		}
+		
 	}
 	
 	

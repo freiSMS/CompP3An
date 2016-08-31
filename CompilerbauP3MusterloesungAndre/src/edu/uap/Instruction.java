@@ -8,12 +8,12 @@ public class Instruction
 {
 	public TramLabel label;
 	
-	private int opcode;
-	private Integer arg1;
-	private Integer arg2;
-	private Integer arg3;
-	private Instruction arg4;
-	private String key;
+	public int opcode;
+	public Integer arg1;
+	public Integer arg2;
+	public Integer arg3;
+	public Instruction arg4;
+	public String key;
 	public Integer erstatzStelle;
 
 	public final static int CONST = 1;
@@ -59,12 +59,21 @@ public class Instruction
 		
 	}
 	
+	//Zusatzkonstruktor für die Invoke Instruktion
+	public Instruction(int opcode, String key,Instruction invoke, int einsetzStelle)	{
+		this(opcode);
+		this.key = key;
+		this.arg4 = invoke;
+		this.erstatzStelle = einsetzStelle;
+	}
+	
 	
 	
 	//Zusatzkonstruktor für die Invoke Instruktion
-	public Instruction(int opcode, Integer arg1,Instruction invoke)	{
+	public Instruction(int opcode, Integer arg1,Instruction invoke, int einsetzStelle)	{
 		this(opcode, arg1);
 		this.arg4 = invoke;
+		this.erstatzStelle = einsetzStelle;
 	}
 	
 	// Die Pseudo Instruction TramCaller enthält bei Funktionen die Position an der später der Wert einzusetzen ist
@@ -74,6 +83,8 @@ public class Instruction
 
 		this.erstatzStelle = ersatzStelle;
 	}
+	
+	
 	
 	
 	
