@@ -245,6 +245,16 @@ public class Instruction
 				}
 			}
 		}
+		if(key!= null)	{
+			retStr +=" key = " + key;
+		}
+		if (erstatzStelle !=null)	{
+			retStr +="  ersatzStelle = " + erstatzStelle;
+		}
+		if(arg4!= null)	{
+			retStr += arg4.toString();
+		}
+		
 
 		return retStr;
 	}

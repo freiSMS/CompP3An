@@ -46,8 +46,16 @@ public class CompilerTest
 				System.out.println(itr.next().toString());
 			}
 			
-
+			System.out.println("\n Beginne mit dem ersetzen der TramLabel. \n");
+			CompilerFabrik.replaceTramLabels(programm);
+			
+			itr = programm.iterator();
+			while (itr.hasNext()){
+				System.out.println(itr.next().toString());
+			}
 		}
+		
+		
 		catch (FileNotFoundException e)
 		{
 			System.err.println(e.getMessage());

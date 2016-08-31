@@ -246,7 +246,7 @@ public class CompilerFabrik {
 		int einsetzStelle = 1;
 		
 		//Pseudoinstruktion1
-		tramCode.add(new Instruction(Instruction.TRAMLABELCALLER, label1, einzusetzendeInstruktion , einsetzStelle));	//Hinter label1 steht der später einzusetzende Maschinenbefehl
+		tramCode.add(new Instruction(Instruction.TRAMLABELCALLER, Integer.toString(label1), einzusetzendeInstruktion , einsetzStelle));	//Hinter label1 steht der später einzusetzende Maschinenbefehl
 		//tramCode.add(new Instruction(Instruction.IFZERO, label1));	//in LabelCount steht der Key zum Label in der HashMap
 		tramCode.addAll(e2);
 		
@@ -257,7 +257,7 @@ public class CompilerFabrik {
 		
 		
 		
-		tramCode.add(new Instruction(Instruction.TRAMLABELCALLER, label2, einzusetzendeInstruktion, einsetzStelle));
+		tramCode.add(new Instruction(Instruction.TRAMLABELCALLER, Integer.toString(label2), einzusetzendeInstruktion, einsetzStelle));
 		tramCode.add(new Instruction(Instruction.TRAMLABEL, Integer.toString(label1)));
 		tramCode.addAll(e3);
 		tramCode.add(new Instruction(Instruction.TRAMLABEL, Integer.toString(label2)));
@@ -320,7 +320,7 @@ public class CompilerFabrik {
 		int ersatzStelle = 1;
 		Instruction einsetzInstruktion = new Instruction(Instruction.GOTO, -1);
 		
-		tramCode.add(new Instruction(Instruction.TRAMLABELCALLER, label, einsetzInstruktion, ersatzStelle));
+		tramCode.add(new Instruction(Instruction.TRAMLABELCALLER, Integer.toString(label), einsetzInstruktion, ersatzStelle));
 		tramCode.addAll(code(letNode.getChildren().get(0),nl, rho2));	//Übersetzung DefNode
 		tramCode.add(new Instruction(Instruction.TRAMLABEL, Integer.toString(label)));
 		tramCode.addAll(code(letNode.getChildren().get(1),nl, rho2));	//Übersetzung BodyNode
@@ -380,7 +380,6 @@ public class CompilerFabrik {
 				instruktionsNummer++;	
 			}
 		}
-		
 
 		for (int i=0; i<altProgramm.size(); i++)	{
 			Instruction tmp = altProgramm.get(i);		
@@ -400,6 +399,7 @@ public class CompilerFabrik {
 			}
 		
 		}
+		return altProgramm;
 		
 	}
 	
