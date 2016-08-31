@@ -14,6 +14,7 @@ public class Instruction
 	private Integer arg3;
 	private Instruction arg4;
 	private String key;
+	public Integer erstatzStelle;
 
 	public final static int CONST = 1;
 	public final static int LOAD = 2;
@@ -49,12 +50,29 @@ public class Instruction
 		this.key = key;
 		
 	}
+
+	//Zusatzkonstruktor für Variablen (hier sind Strings und nicht int die keys
+	public Instruction(int opcode, String key, Instruction ins)	{
+		this.opcode = opcode;
+		this.key = key;
+		this.arg4 = ins;
+		
+	}
+	
 	
 	
 	//Zusatzkonstruktor für die Invoke Instruktion
 	public Instruction(int opcode, Integer arg1,Instruction invoke)	{
 		this(opcode, arg1);
 		this.arg4 = invoke;
+	}
+	
+	// Die Pseudo Instruction TramCaller enthält bei Funktionen die Position an der später der Wert einzusetzen ist
+	public Instruction(int opcode, Integer arg1, Integer arg2, Integer arg3, Integer ersatzStelle)
+	{
+		this(opcode, arg1, arg2, arg3);
+
+		this.erstatzStelle = ersatzStelle;
 	}
 	
 	
@@ -191,6 +209,12 @@ public class Instruction
 				break;
 			case Instruction.RETURN:
 				retStr += "RETURN";
+				break;
+			case Instruction.TRAMLABEL:
+				retStr +="TRAMLABEL";
+				break;
+			case Instruction.TRAMLABELCALLER:
+				retStr += "TRAMLABELCALLER";
 				break;
 			default:
 				retStr += "ERROR";

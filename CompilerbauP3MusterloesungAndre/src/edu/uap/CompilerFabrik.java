@@ -264,11 +264,12 @@ public class CompilerFabrik {
 
 		
 		//Hilfsvariablen
-		Integer idName = Integer.decode(call.getChildren().get(0).getAttribute().toString());
+		String idName = call.getChildren().get(0).getAttribute().toString();
 		int anzahlFunktionsparameter = call.getChildren().size() -1; //Da das erste Kind der IDNode ist
-		AddressPair idSpeicherInhalt = rho.get(idName.toString());
+		AddressPair idSpeicherInhalt = rho.get(idName);
 		int nestingLevelDifferenz = nl - idSpeicherInhalt.nl;
-		Instruction invokeInstruction = new Instruction(Instruction.INVOKE, anzahlFunktionsparameter, idName, nestingLevelDifferenz);	//idName muss später mit der Instruktionsnummer dieses Labels ersetzt werden
+		int spaetereEinsetzposition = 2;
+		Instruction invokeInstruction = new Instruction(Instruction.INVOKE, anzahlFunktionsparameter, -1, nestingLevelDifferenz, spaetereEinsetzposition);	//idName muss später mit der Instruktionsnummer dieses Labels ersetzt werden
 				
 		tramCode.add(new Instruction(Instruction.TRAMLABELCALLER, idName,invokeInstruction));
 		//nl++;	//???? Nur die Funktionsdefinitionen bekommen bei der Definition ein höheres Nesting Level??
