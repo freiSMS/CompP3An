@@ -20,6 +20,6 @@ public class DefNode extends Node
     		rho2 = ((FuncNode)this.getChildren().get(i)).elab_def(rho2, nl+i+1);
     	}
     	
-    	return rho;
+    	return rho2;
     }
 }

@@ -52,7 +52,7 @@ public class CompilerFabrik {
 		Vector<Instruction> tramCode = new Vector<Instruction>();
 		switch (node.getType())	{
 		case "ARGS":
-			tramCode.addAll(code((ReadNode) node, nl, rho));
+			tramCode.addAll(code((ArgsNode) node, nl, rho));
 			break;
 		case "ASSIGN":
 			tramCode.addAll(code((AssignNode) node, nl, rho));
@@ -124,7 +124,7 @@ public class CompilerFabrik {
 	
 	public static Vector<Instruction> code(ReadNode read, int nl, HashMap<String, AddressPair> rho)	{
 		//Hilfsvariablen
-		DefNode id = (DefNode) read.getChildren().get(0);
+		IDNode id = (IDNode) read.getChildren().get(0);
 		
 		//Sucht im Speicher nach der ID in allen kleineren Nesting Leveln
 		AddressPair idSpeicherinhalt = rho.get(id.getAttribute().toString());	//evtl. Fehlermeldung einbauen, wenn null zurückgeliefert wird
@@ -259,10 +259,9 @@ public class CompilerFabrik {
 		
 		Vector<Instruction> tramCode = new Vector<Instruction>();
 		
-		//Alle Kinder ab index 1 sind Funktionsparameter und werden zuerst in Code übersetzt
-		for(int i=1; i<call.getChildren().size();i++)	{
-			tramCode.addAll(code(call.getChildren().get(i), nl, rho));
-		}
+		ArgsNode args = (ArgsNode)call.getChildren().get(1);
+		tramCode.addAll(code(args, nl, rho));
+
 		
 		//Hilfsvariablen
 		Integer idName = Integer.decode(call.getChildren().get(0).getAttribute().toString());
@@ -273,6 +272,16 @@ public class CompilerFabrik {
 				
 		tramCode.add(new Instruction(Instruction.TRAMLABELCALLER, idName,invokeInstruction));
 		//nl++;	//???? Nur die Funktionsdefinitionen bekommen bei der Definition ein höheres Nesting Level??
+		return tramCode;
+	}
+	
+	public static Vector<Instruction> code(ArgsNode argsNode, int nl, HashMap<String, AddressPair> rho)	{
+		Vector<Instruction> tramCode = new Vector<Instruction>();
+		
+		//Alle Kinder des ArgsNodes sind Expressions, für die nacheinander Code erzeugt wird
+		for(int i=0; i<argsNode.getChildren().size();i++)	{
+			tramCode.addAll(code(argsNode.getChildren().get(i), nl, rho));
+		}
 		return tramCode;
 	}
 	
@@ -293,9 +302,9 @@ public class CompilerFabrik {
 		addLabel(nl, rho);
 		int label = labelCount;
 		tramCode.add(new Instruction(Instruction.TRAMLABELCALLER, label, Instruction.GOTO, label));
-		tramCode.addAll(code(letNode.getChildren().get(0),nl, rho2));
+		tramCode.addAll(code(letNode.getChildren().get(0),nl, rho2));	//Übersetzung DefNode
 		tramCode.add(new Instruction(Instruction.TRAMLABEL, label));
-		tramCode.addAll(code(letNode.getChildren().get(1),nl, rho2));
+		tramCode.addAll(code(letNode.getChildren().get(1),nl, rho2));	//Übersetzung BodyNode
 		return tramCode;
 		
 	}
@@ -304,7 +313,9 @@ public class CompilerFabrik {
 	public static Vector<Instruction> code(FuncNode funcNode, int nl1, HashMap<String, AddressPair> rho)	{
 		Vector<Instruction> tramCode = new Vector<Instruction>();
 		
-		String funcKey = funcNode.getAttribute().toString();
+		IDNode signature = (IDNode) funcNode.getChildren().get(0);
+		
+		String funcKey = signature.getAttribute().toString();// der IDNode (Kind 0) enthält die Signatur der Funktion
 		
 		//Speichere die FunktionsID in der Hashmap mit dem Label und dem Nesting Level:
 		int nl = rho.get(funcKey).nl;
@@ -318,13 +329,19 @@ public class CompilerFabrik {
 			String key = par.getChildren().get(i).getAttribute().toString();
 			rho.put(key, new AddressPair(i, nl+1));
 		}
-		tramCode.addAll(code(funcNode.getChildren().get(2).getChildren().get(0), nl+1, rho));
+		tramCode.addAll(code(funcNode.getChildren().get(2).getChildren().get(0), nl+1, rho)); //Expressioncode in body
 		
 		
 		
 		
 		return tramCode;
 		
+	}
+	
+	public static Vector<Instruction> code(BodyNode bodyNode, int nl, HashMap<String, AddressPair> rho)	{
+		Vector<Instruction> tramCode = new Vector<Instruction>();
+		tramCode.addAll(code(bodyNode.getChildren().get(0), nl, rho));
+		return tramCode;
 	}
 	
 	

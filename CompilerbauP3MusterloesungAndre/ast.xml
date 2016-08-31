@@ -1,2 +1,2 @@
 <?xml version="1.0" encoding="UTF-8" standalone="yes"?>
-<SEMI><ASSIGN><ID attr="x"></ID><CONST attr="1"></CONST></ASSIGN><ASSIGN><ID attr="y"></ID><CONST attr="2"></CONST></ASSIGN><ASSIGN><ID attr="z"></ID><CONST attr="3"></CONST></ASSIGN></SEMI>
+<LET><DEF><FUNC><ID attr="square"></ID><PARAMS><ID attr="x"></ID></PARAMS><BODY><OP attr="*"><READ><ID attr="x"></ID></READ><READ><ID attr="x"></ID></READ></OP></BODY></FUNC></DEF><BODY><CALL><ID attr="square"></ID><ARGS><CONST attr="10"></CONST></ARGS></CALL></BODY></LET>
