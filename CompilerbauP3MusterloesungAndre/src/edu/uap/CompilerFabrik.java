@@ -228,9 +228,10 @@ public class CompilerFabrik {
 	
 	public static Vector<Instruction> code(IfNode ifNode, int nl, HashMap<String, AddressPair> rho)	{
 		Vector<Instruction> tramCode = new Vector<Instruction>();	
-		Vector<Instruction> e1 = code(ifNode.getChildren().get(0), nl, rho);
-		Vector<Instruction> e2 = code(ifNode.getChildren().get(1), nl, rho);
-		Vector<Instruction> e3 = code(ifNode.getChildren().get(2), nl, rho);
+		
+		Vector<Instruction> e1 = code(ifNode.getChildren().get(0).getChildren().get(0), nl, rho);
+		Vector<Instruction> e2 = code(ifNode.getChildren().get(1).getChildren().get(0), nl, rho);
+		Vector<Instruction> e3 = code(ifNode.getChildren().get(2).getChildren().get(0), nl, rho);
 		
 		tramCode.addAll(e1);
 		//Es wird ein neues Label erstellt zu dem gesprungen werden soll, wenn if(e1) true ergibt

@@ -1,2 +1,9 @@
-let square(x) { x*x } 
-in square(10)
+let wrapper(number, threshold) {
+		let square(x) {
+			    if x*x > threshold 
+			    then x 
+			    else x*x
+		    } 
+		in square(number)
+	}
+in wrapper(4, 10)
