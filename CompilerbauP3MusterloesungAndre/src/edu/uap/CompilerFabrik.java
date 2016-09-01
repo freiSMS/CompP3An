@@ -223,7 +223,7 @@ public class CompilerFabrik {
 			//***Pop Instruction einfügen ****tramCode.add(Instruction.)
 		}
 		//füge für das letzte Kind des Semi Knoten den Code manuell hinzu, weil darauf kein pop folgt
-		tramCode.addAll(code(semi.getChildren().get(semi.getChildren().size()), nl, rho));
+		tramCode.addAll(code(semi.getChildren().get(semi.getChildren().size()-1), nl, rho));
 		return tramCode;
 	}
 	
@@ -372,17 +372,18 @@ public class CompilerFabrik {
 	
 	public static Vector<Instruction> replaceTramLabels(Vector<Instruction> altProgramm)	{
 		HashMap<String, Integer> rho = new HashMap<String, Integer>();
-		int instruktionsNummer = 1;
-		Iterator<Instruction> it = altProgramm.iterator();
+		int instruktionsNummer = 0;
+		//Iterator<Instruction> it = altProgramm.iterator();
 		
 		//Phase1; ermittle die Instruktionsnummern aller TramLabels und entferne diese daraufhin
-		for (int i=0; i<altProgramm.size(); i++)	{
+		while(instruktionsNummer <altProgramm.size())	{
+			
 			//Falls die aktuelle Instruktion ein TramLabel ist, speichere die Instruktionsnummer mit dem key in arg1 in der Hashmap
 			//Und entferne das Label
-			Instruction tmp = altProgramm.get(i);
+			Instruction tmp = altProgramm.get(instruktionsNummer);
 			if(((Integer)tmp.opcode).equals(Instruction.TRAMLABEL)){
-				rho.put(tmp.key, instruktionsNummer);
-				altProgramm.remove(i);
+				rho.put(tmp.key, instruktionsNummer+1);
+				altProgramm.remove(instruktionsNummer);
 			}
 			else	{
 				instruktionsNummer++;	
