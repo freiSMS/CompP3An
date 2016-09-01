@@ -1,0 +1,121 @@
+<?xml version="1.0" encoding="UTF-8" standalone="yes"?>
+<LET>
+	<DEF>
+		<FUNC>
+			<ID attr="mult"></ID>
+			<PARAMS>
+				<ID attr="a"></ID>
+				<ID attr="b"></ID>
+			</PARAMS>
+			<BODY>
+				<OP attr="*">
+					<READ>
+						<ID attr="a"></ID>
+					</READ>
+					<READ>
+						<ID attr="b"></ID>
+					</READ>
+				</OP>
+			</BODY>
+		</FUNC>
+		<FUNC>
+			<ID attr="add"></ID>
+			<PARAMS>
+				<ID attr="a"></ID>
+				<ID attr="b"></ID>
+			</PARAMS>
+			<BODY>
+				<LET>
+					<DEF>
+						<FUNC>
+							<ID attr="inc"></ID>
+							<PARAMS>
+								<ID attr="a"></ID>
+							</PARAMS>
+							<BODY>
+								<IF>
+									<COND>
+										<PAR>
+											<OP attr="!=">
+												<READ>
+													<ID attr="b"></ID>
+												</READ>
+												<CONST attr="0"></CONST>
+											</OP>
+										</PAR>
+									</COND>
+									<THEN>
+										<SEMI>
+											<ASSIGN>
+												<ID attr="b"></ID>
+												<OP attr="-">
+													<READ>
+														<ID attr="b"></ID>
+													</READ>
+													<CONST attr="1"></CONST>
+												</OP>
+											</ASSIGN>
+											<CALL>
+												<ID attr="inc"></ID>
+												<ARGS>
+													<OP attr="+">
+														<READ>
+															<ID attr="a"></ID>
+														</READ>
+														<CONST attr="1"></CONST>
+													</OP>
+												</ARGS>
+											</CALL>
+										</SEMI>
+									</THEN>
+									<ELSE>
+										<CALL>
+											<ID attr="mult"></ID>
+											<ARGS>
+												<READ>
+													<ID attr="a"></ID>
+												</READ>
+												<CONST attr="1"></CONST>
+											</ARGS>
+										</CALL>
+									</ELSE>
+								</IF>
+							</BODY>
+						</FUNC>
+					</DEF>
+					<BODY>
+						<CALL>
+							<ID attr="inc"></ID>
+							<ARGS>
+								<READ>
+									<ID attr="a"></ID>
+								</READ>
+							</ARGS>
+						</CALL>
+					</BODY>
+				</LET>
+			</BODY>
+		</FUNC>
+	</DEF>
+	<BODY>
+		<CALL>
+			<ID attr="add"></ID>
+			<ARGS>
+				<CALL>
+					<ID attr="mult"></ID>
+					<ARGS>
+						<CONST attr="2"></CONST>
+						<CONST attr="3"></CONST>
+					</ARGS>
+				</CALL>
+				<CALL>
+					<ID attr="add"></ID>
+					<ARGS>
+						<CONST attr="4"></CONST>
+						<CONST attr="5"></CONST>
+					</ARGS>
+				</CALL>
+			</ARGS>
+		</CALL>
+	</BODY>
+</LET>

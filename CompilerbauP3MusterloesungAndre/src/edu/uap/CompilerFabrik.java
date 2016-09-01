@@ -275,7 +275,8 @@ public class CompilerFabrik {
 	
 	//Muss ich hier das Nesting Level erhöhen?
 	public static Vector<Instruction> code(CallNode call, int nl, HashMap<String, AddressPair> rho)	{
-		nl++;	//ein Call Node erhöht das NestingLevel
+
+		//nl++;	//ein Call Node erhöht das NestingLevel
 		
 		Vector<Instruction> tramCode = new Vector<Instruction>();
 		
