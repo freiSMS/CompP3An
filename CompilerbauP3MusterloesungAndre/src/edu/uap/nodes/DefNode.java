@@ -17,7 +17,7 @@ public class DefNode extends Node
     	HashMap<String,AddressPair> rho2 = (HashMap<String, AddressPair>) rho.clone();
     	for(int i=0; i< this.getChildren().size(); i++)	{
     		//das nestingLEvel steigt bei jedem func knoten? -> nl + (i+1) ist das nesting level?
-    		rho2 = ((FuncNode)this.getChildren().get(i)).elab_def(rho2, nl+i+1);
+    		rho2 = ((FuncNode)this.getChildren().get(i)).elab_def(rho2, nl+1);
     	}
     	
     	return rho2;
