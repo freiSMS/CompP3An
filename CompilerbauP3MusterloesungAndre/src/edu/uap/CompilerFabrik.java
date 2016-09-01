@@ -209,6 +209,12 @@ public class CompilerFabrik {
 		return tramCode;
 	}
 	
+	public static Vector<Instruction> code(ParNode parNode, int nl, HashMap<String, AddressPair> rho)	{
+		Vector<Instruction> tramCode = new Vector<Instruction>();
+		tramCode.addAll(code(parNode.getChildren().get(0), nl, rho));
+		return tramCode;
+	}
+	
 	//Durch das flachklopfen hat jeder Semi Node beliebig viele Kinder
 	public static Vector<Instruction> code (SemiNode semi, int nl, HashMap<String, AddressPair> rho)	{
 		Vector<Instruction> tramCode = new Vector<Instruction>();

@@ -252,7 +252,7 @@ public class Instruction
 			retStr +="  ersatzStelle = " + erstatzStelle;
 		}
 		if(arg4!= null)	{
-			retStr += arg4.toString();
+			retStr += "  " + arg4.toString();
 		}
 		
 

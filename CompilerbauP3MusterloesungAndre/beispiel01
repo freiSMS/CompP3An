@@ -1,9 +1,2 @@
-let wrapper(number, threshold) {
-		let square(x) {
-			    if x*x > threshold 
-			    then x 
-			    else x*x
-		    } 
-		in square(number)
-	}
-in wrapper(4, 10)
+let inc(a, b) { if (b!=0) then inc(a+1, b-1) else a }
+in inc(2,3)
