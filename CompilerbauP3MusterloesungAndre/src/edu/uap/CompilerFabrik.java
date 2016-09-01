@@ -369,12 +369,13 @@ public class CompilerFabrik {
 		Iterator<Instruction> it = altProgramm.iterator();
 		
 		//Phase1; ermittle die Instruktionsnummern aller TramLabels und entferne diese daraufhin
-		while(it.hasNext())	{
+		for (int i=0; i<altProgramm.size(); i++)	{
 			//Falls die aktuelle Instruktion ein TramLabel ist, speichere die Instruktionsnummer mit dem key in arg1 in der Hashmap
 			//Und entferne das Label
-			Instruction tmp = it.next();
+			Instruction tmp = altProgramm.get(i);
 			if(((Integer)tmp.opcode).equals(Instruction.TRAMLABEL)){
 				rho.put(tmp.key, instruktionsNummer);
+				altProgramm.remove(i);
 			}
 			else	{
 				instruktionsNummer++;	
@@ -390,9 +391,9 @@ public class CompilerFabrik {
 				int pos = rho.get(tmp.key);	//hole die Instruktionsnummer des Labels
 				Instruction einfuegeInstruction = tmp.arg4;
 				switch(tmp.erstatzStelle)	{
-				case 1: einfuegeInstruction.arg1 = pos;
-				case 2: einfuegeInstruction.arg2 = pos;
-				case 3: einfuegeInstruction.arg3 = pos;
+				case 1: einfuegeInstruction.arg1 = pos; break;
+				case 2: einfuegeInstruction.arg2 = pos; break;
+				case 3: einfuegeInstruction.arg3 = pos; break;
 				}
 				altProgramm.add(i, einfuegeInstruction);
 				altProgramm.remove(i+1);
