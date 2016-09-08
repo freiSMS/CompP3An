@@ -320,7 +320,10 @@ public class CompilerFabrik {
 	
 	public static Vector<Instruction> code(LetNode letNode, int nl, HashMap<String, AddressPair> rho)	{
 		Vector<Instruction> tramCode = new Vector<Instruction>();
+		int zaehler = labelCount;
 		HashMap<String, AddressPair> rho2 = ((DefNode)letNode.getChildren().get(0)).elab_def(rho, nl);
+		int erzeugteVariablen = zaehler - labelCount;	//Die Anzahl der in d definierten Varialblen ergibt sich aus dem Label Count vor und nach der elab Ausführung
+		
 		addLabel(nl, rho);
 		
 		//Hilfsvariablen für Tramlabel
@@ -383,7 +386,7 @@ public class CompilerFabrik {
 			//Und entferne das Label
 			Instruction tmp = altProgramm.get(instruktionsNummer);
 			if(((Integer)tmp.opcode).equals(Instruction.TRAMLABEL)){
-				rho.put(tmp.key, instruktionsNummer+1);
+				rho.put(tmp.key, instruktionsNummer);
 				altProgramm.remove(instruktionsNummer);
 			}
 			else	{
