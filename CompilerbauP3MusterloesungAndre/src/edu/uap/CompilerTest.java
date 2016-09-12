@@ -16,6 +16,7 @@ import java.util.LinkedList;
 import java.util.Vector;
 
 import edu.uap.nodes.Node;
+import edu.uap.tram.abstractMachine;
 
 public class CompilerTest
 {
@@ -36,6 +37,7 @@ public class CompilerTest
 			pw.println("<?xml version=\"1.0\" encoding=\"UTF-8\" standalone=\"yes\"?>");
 			pw.print(ast.toString());
 			System.out.println("\"ast.xml\" file created");
+			pw.close();
 			
 			HashMap<String, AddressPair> rho = new HashMap<String, AddressPair>();
 			Vector<Instruction> programm = CompilerFabrik.code(ast, 0, rho);
@@ -53,6 +55,12 @@ public class CompilerTest
 			while (itr.hasNext()){
 				System.out.println(itr.next().toString());
 			}
+			Instruction [] prog = programm.toArray(new Instruction[programm.size()]);
+			abstractMachine abstractM = new abstractMachine();
+			abstractM.inititalize(prog);
+			abstractM.debug();
+			System.out.println("Abstrakte Maschine erzeugt.");
+			abstractM.execute();
 		}
 		
 		

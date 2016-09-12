@@ -1,10 +1,9 @@
-let mult(a,b) { a*b }
-    
-    add(a,b) { 
-      let inc(a) { 
-            if (b!=0) then b=b-1;inc(a+1) else mult(a,1) 
-          }
-               
-      in inc(a) }
-
-in add(mult(2,3),add(4,5))
+let wrapper(number, threshold) {
+		let square(x) {
+			    if x*x > threshold 
+			    then x 
+			    else x*x
+		    } 
+		in square(number)
+	}
+in wrapper(4, 10)

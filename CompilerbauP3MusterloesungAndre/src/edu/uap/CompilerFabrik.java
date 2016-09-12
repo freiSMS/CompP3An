@@ -174,10 +174,10 @@ public class CompilerFabrik {
 		case "!=":
 			instruktionsNummer = Instruction.NEQ;
 			break;
-		case "&lt":
+		case "&lt;":
 			instruktionsNummer = Instruction.LT;
 			break;
-		case "&gt":
+		case "&gt;":
 			instruktionsNummer = Instruction.GT;
 			break;
 		case "+":
@@ -286,13 +286,14 @@ public class CompilerFabrik {
 		
 		//Hilfsvariablen
 		String idName = call.getChildren().get(0).getAttribute().toString();
-		int anzahlFunktionsparameter = call.getChildren().size() -1; //Da das erste Kind der IDNode ist
+		int anzahlFunktionsparameter = call.getChildren().getLast().getChildren().size();	//last steht fuer 1
 		AddressPair idSpeicherInhalt = rho.get(idName);
+		String label = idSpeicherInhalt.loc.toString();
 		int nestingLevelDifferenz = nl - idSpeicherInhalt.nl;
 		int spaetereEinsetzposition = 2;
 		Instruction invokeInstruction = new Instruction(Instruction.INVOKE, anzahlFunktionsparameter, -1, nestingLevelDifferenz);	//idName muss später mit der Instruktionsnummer dieses Labels ersetzt werden
 				
-		tramCode.add(new Instruction(Instruction.TRAMLABELCALLER, idName, invokeInstruction, spaetereEinsetzposition));
+		tramCode.add(new Instruction(Instruction.TRAMLABELCALLER, label, invokeInstruction, spaetereEinsetzposition));
 		//nl++;	//???? Nur die Funktionsdefinitionen bekommen bei der Definition ein höheres Nesting Level??
 		return tramCode;
 	}
@@ -342,24 +343,29 @@ public class CompilerFabrik {
 	
 	public static Vector<Instruction> code(FuncNode funcNode, int nl1, HashMap<String, AddressPair> rho)	{
 		Vector<Instruction> tramCode = new Vector<Instruction>();
+		HashMap<String, AddressPair> rho2 =(HashMap<String, AddressPair>) rho.clone();
+
 		
+		//Function Body Übersetzung
 		IDNode signature = (IDNode) funcNode.getChildren().get(0);
 		
 		String funcKey = signature.getAttribute().toString();// der IDNode (Kind 0) enthält die Signatur der Funktion
 		
 		//Speichere die FunktionsID in der Hashmap mit dem Label und dem Nesting Level:
-		int nl = rho.get(funcKey).nl;
+		int nl = rho2.get(funcKey).nl;
+		String label = rho2.get(funcKey).loc.toString();
 
-		tramCode.add(new Instruction(Instruction.TRAMLABEL, funcKey));
+		tramCode.add(new Instruction(Instruction.TRAMLABEL, label));
 		
 		//Hinzufügen der Parameter in den Speicher:
 		ParamsNode par = (ParamsNode) funcNode.getChildren().get(1);
 
 		for(int i=0; i<par.getChildren().size();i++)	{
 			String key = par.getChildren().get(i).getAttribute().toString();
-			rho.put(key, new AddressPair(i, nl+1));
+			rho2.put(key, new AddressPair(i, nl+1));
 		}
-		tramCode.addAll(code(funcNode.getChildren().get(2).getChildren().get(0), nl+1, rho)); //Expressioncode in body
+		tramCode.addAll(code(funcNode.getChildren().get(2).getChildren().get(0), nl+1, rho2)); //Expressioncode in body
+		tramCode.add(new Instruction(Instruction.RETURN));
 		
 		
 		
@@ -412,6 +418,7 @@ public class CompilerFabrik {
 			}
 		
 		}
+		altProgramm.add(new Instruction(Instruction.HALT));
 		return altProgramm;
 		
 	}

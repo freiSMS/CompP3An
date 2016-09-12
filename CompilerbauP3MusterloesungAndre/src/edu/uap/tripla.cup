@@ -66,14 +66,13 @@ terminal Integer CONST;
 
 non terminal Node E, A, D, V, DPart;
 
-
+precedence right IF, THEN, ELSE;
 precedence left COMMA;
 precedence left SEMI;
 precedence right ASSIGN;
 precedence nonassoc LT, GT, EQ, NEQ;
 precedence left ADD, SUB;
 precedence left MULT, DIV;
-precedence right ELSE;
 
 
 
